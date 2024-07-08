@@ -11,7 +11,7 @@ let idCounter = 1;
 
 app.get('/api/products', (req, res) => {
     const page = parseInt(req.query.page) || 1;
-    const startIndex = (page - 1) * limit;
+    const startIndex = (page - 1) * 5;
     const endIndex = page * 5;
 
     const resultProducts = products.slice(startIndex, endIndex);
