@@ -30,7 +30,8 @@ app.post('/api/products', (req, res) => {
 app.put('/api/products/:id', (req, res) => {
     const index = products.findIndex(p => p.id === parseInt(req.params.id));
     if (index !== -1) {
-        products[index] = { ...products[index], ...req.body };
+        products[index] = { ...products[index], ...req.body, id: +req.body.id };
+        console.log(req.body)
         res.json(products[index]);
     } else {
         res.status(404).json({ message: 'Product not found' });
@@ -38,7 +39,9 @@ app.put('/api/products/:id', (req, res) => {
 });
 
 app.delete('/api/products/:id', (req, res) => {
+    console.log('before', products);
     products = products.filter(p => p.id !== parseInt(req.params.id));
+    console.log('after',products)
     res.status(204).end();
 });
 
