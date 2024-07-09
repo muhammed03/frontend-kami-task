@@ -1,6 +1,5 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import axios from 'axios';
-import { RootState } from './store';
 
 const URL = 'http://localhost:5000/api'
 
@@ -8,8 +7,9 @@ export interface Product {
   id?: string;
   name: string;
   description: string;
-  image: string;
+  file: string;
   price: number;
+  imageUrl: string;
   status: 'active' | 'archived';
 }
 
@@ -17,30 +17,50 @@ interface ProductsState {
   items: Product[];
   status: 'idle' | 'loading' | 'succeeded' | 'failed';
   error: string | null;
+  currentPage: number;
+  totalPages: number;
 }
 
 const initialState: ProductsState = {
   items: [],
   status: 'idle',
   error: null,
+  currentPage: 1,
+  totalPages: 0,
 };
 
-export const fetchProducts = createAsyncThunk<Product[]>('products/fetchProducts', async () => {
-  const response = await axios.get(`${URL}/products`);
-  return response.data;
-});
+export const fetchProducts = createAsyncThunk<
+  { products: Product[], currentPage: number, totalItems: number, totalPages: number },
+  { page: number, search?: string }
+>(
+  'products/fetchProducts',
+  async ({ page, search = '' }) => {
+    const response = await axios.get(`${URL}/products`, {
+      params: { page, search }
+    });
+    return response.data;
+  }
+);
 
-export const createProduct = createAsyncThunk<Product, Product>('products/createProduct', async (product) => {
-  const response = await axios.post(`${URL}/products`, product);
-  return response.data;
-});
+export const createProduct = createAsyncThunk<Product, FormData>(
+  'products/createProduct',
+  async (formData) => {
+    const response = await axios.post(`${URL}/products`, formData, {
+      headers: { 'Content-Type': 'multipart/form-data' }
+    });
+    return response.data;
+  }
+);
 
-export const updateProduct = createAsyncThunk<Product, Product>('products/updateProduct', async (product) => {
-  const { id } = product;
-  const response = await axios.put(`${URL}/products/${id}`, product);
-  return response.data;
-});
-
+export const updateProduct = createAsyncThunk<Product, { formData: FormData, id: string }>(
+  'products/updateProduct',
+  async ({ formData, id }) => {
+    const response = await axios.put(`${URL}/products/${id}`, formData, {
+      headers: { 'Content-Type': 'multipart/form-data' }
+    });
+    return response.data;
+  }
+);
 
 export const deleteProduct = createAsyncThunk<string, string>('products/deleteProduct', async (id) => {
   await axios.delete(`${URL}/products/${id}`);
@@ -50,15 +70,21 @@ export const deleteProduct = createAsyncThunk<string, string>('products/deletePr
 const productsSlice = createSlice({
   name: 'products',
   initialState,
-  reducers: {},
+  reducers: {
+    setCurrentPage(state, action: PayloadAction<number>) {
+      state.currentPage = action.payload;
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(fetchProducts.pending, (state) => {
         state.status = 'loading';
       })
-      .addCase(fetchProducts.fulfilled, (state, action: PayloadAction<Product[]>) => {
+      .addCase(fetchProducts.fulfilled, (state, action: PayloadAction<{ products: Product[], currentPage: number, totalItems: number, totalPages: number }>) => {
         state.status = 'succeeded';
-        state.items = action.payload;
+        state.items = action.payload.products;
+        state.currentPage = action.payload.currentPage;
+        state.totalPages = action.payload.totalPages;
       })
       .addCase(fetchProducts.rejected, (state, action) => {
         state.status = 'failed';
@@ -76,5 +102,7 @@ const productsSlice = createSlice({
       });
   },
 });
+
+export const { setCurrentPage } = productsSlice.actions;
 
 export default productsSlice.reducer;

@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from 'react-router-dom';
-import { Button, Table } from '@mantine/core';
+import { Button, Table, Image } from '@mantine/core';
 import { useNavigate } from 'react-router-dom';
 import { Product } from '../redux/productsSlice';
 
@@ -31,7 +31,12 @@ const ProductsList : React.FC<Props> = ({ products, deleteProduct }) => {
                         <Table.Td>{product.name}</Table.Td>
                         <Table.Td>{product.description}</Table.Td>
                         <Table.Td>{product.price}</Table.Td>
-                        <Table.Td></Table.Td>
+                        <Table.Td>
+                            <Image 
+                                w={200}
+                                src={product.imageUrl}
+                            />
+                        </Table.Td>
                         <Table.Td>
                             <Button
                                 onClick={() => navigate(`/products/edit/${product?.id}`)}
