@@ -39,9 +39,7 @@ app.put('/api/products/:id', (req, res) => {
 });
 
 app.delete('/api/products/:id', (req, res) => {
-    console.log('before', products);
     products = products.filter(p => p.id !== parseInt(req.params.id));
-    console.log('after',products)
     res.status(204).end();
 });
 

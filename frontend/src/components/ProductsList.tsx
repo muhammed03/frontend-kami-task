@@ -1,47 +1,55 @@
 import React from "react";
+import { Link } from 'react-router-dom';
 import { Button, Table } from '@mantine/core';
+import { useNavigate } from 'react-router-dom';
+import { Product } from '../redux/productsSlice';
 
-const elements = [
-    { position: 6, mass: 12.011, symbol: 'C', name: 'Carbon' },
-    { position: 7, mass: 14.007, symbol: 'N', name: 'Nitrogen' },
-    { position: 39, mass: 88.906, symbol: 'Y', name: 'Yttrium' },
-    { position: 56, mass: 137.33, symbol: 'Ba', name: 'Barium' },
-    { position: 58, mass: 140.12, symbol: 'Ce', name: 'Cerium' },
-  ];
+interface Props {
+    products: Product[];
+    deleteProduct: (id: string) => void;
+}
 
-const ProductsList = () => {
-    const rows = elements.map((element) => (
-        <Table.Tr key={element.name}>
-          <Table.Td>{element.position}</Table.Td>
-          <Table.Td>{element.name}</Table.Td>
-          <Table.Td>{element.symbol}</Table.Td>
-          <Table.Td>{element.mass}</Table.Td>
-          <Table.Td>image</Table.Td>
-          <Table.Td>
-            <Button>
-                Edit
-            </Button>
-            <Button ml={20} color="red">
-                Delete
-            </Button>
-          </Table.Td>
-        </Table.Tr>
-      ));
+const ProductsList : React.FC<Props> = ({ products, deleteProduct }) => {
+    const navigate = useNavigate();
 
       return (
         <Table>
-          <Table.Thead>
-            <Table.Tr>
-              <Table.Th>ID</Table.Th>
-              <Table.Th>Name</Table.Th>
-              <Table.Th>Description</Table.Th>
-              <Table.Th>Price</Table.Th>
-              <Table.Th>Image</Table.Th>
-              <Table.Th>Actions</Table.Th>
-            </Table.Tr>
-          </Table.Thead>
-          <Table.Tbody>{rows}</Table.Tbody>
-        </Table>
+            <Table.Thead>
+                <Table.Tr>
+                    <Table.Th>ID</Table.Th>
+                    <Table.Th>Name</Table.Th>
+                    <Table.Th>Description</Table.Th>
+                    <Table.Th>Price</Table.Th>
+                    <Table.Th>Image</Table.Th>
+                    <Table.Th>Actions</Table.Th>
+                </Table.Tr>
+            </Table.Thead>
+            <Table.Tbody>
+                {products.map((product) => (
+                    <Table.Tr key={product.id}>
+                        <Table.Td>{product.id}</Table.Td>
+                        <Table.Td>{product.name}</Table.Td>
+                        <Table.Td>{product.description}</Table.Td>
+                        <Table.Td>{product.price}</Table.Td>
+                        <Table.Td></Table.Td>
+                        <Table.Td>
+                            <Button
+                                onClick={() => navigate(`/products/edit/${product?.id}`)}
+                            >
+                                Edit
+                            </Button>
+                            <Button ml={20} color="red" onClick={() => {
+                                if(product.id) {
+                                    deleteProduct(product.id)
+                                }
+                            }}>
+                                Delete
+                            </Button>
+                        </Table.Td>
+                    </Table.Tr>
+                ))}
+            </Table.Tbody>
+            </Table>
       );
 }
 
