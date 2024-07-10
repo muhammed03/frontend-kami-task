@@ -31,7 +31,7 @@ const initialState: ProductsState = {
 
 export const fetchProducts = createAsyncThunk<
   { products: Product[], currentPage: number, totalItems: number, totalPages: number },
-  { page: number, search?: string }
+  { page?: number, search?: string }
 >(
   'products/fetchProducts',
   async ({ page, search = '' }) => {

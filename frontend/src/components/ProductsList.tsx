@@ -1,5 +1,4 @@
 import React from "react";
-import { Link } from 'react-router-dom';
 import { Button, Table, Image } from '@mantine/core';
 import { useNavigate } from 'react-router-dom';
 import { Product } from '../redux/productsSlice';
@@ -25,11 +24,11 @@ const ProductsList : React.FC<Props> = ({ products, deleteProduct }) => {
                 </Table.Tr>
             </Table.Thead>
             <Table.Tbody>
-                {products.map((product) => (
-                    <Table.Tr key={product.id}>
+                {products.map((product, index) => (
+                    <Table.Tr key={index}>
                         <Table.Td>{product.id}</Table.Td>
                         <Table.Td>{product.name}</Table.Td>
-                        <Table.Td>{product.description}</Table.Td>
+                        <Table.Td>{JSON.parse(product.description).blocks[0]?.text}</Table.Td>
                         <Table.Td>{product.price}</Table.Td>
                         <Table.Td>
                             <Image 

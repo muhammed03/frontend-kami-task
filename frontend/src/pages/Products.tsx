@@ -22,7 +22,7 @@ const Products = () => {
     useEffect(() => {
         dispatch(setCurrentPage(currentPage)); 
         dispatch(fetchProducts({page: currentPage, search}));
-    }, [dispatch, searchParams]);
+    }, [dispatch, searchParams, currentPage]);
 
     const handleDelete = (id: string) => {
         dispatch(deleteProduct(id));
